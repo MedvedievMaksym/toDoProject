@@ -41,9 +41,17 @@ const tasks = [
   //Elements UI
   const listContainer = document.querySelector(
       '.tasks-list-section .list-group',
-    );
+  );
 
+  //получаем доступ к инпутам с формы
+  const form = document.forms['addTask'];
+  const inputTitle = form.elements['title'];
+  const inputBody = form.elements['body'];
+
+
+  //EVENTS (СОБЫТИЯ)
   renderAllTasks(objOfTasks);
+  form.addEventListener('submit', onFormSubmitHandler);
 
   function renderAllTasks(tasksList) {
     if(!tasksList) {
@@ -89,6 +97,37 @@ const tasks = [
     li.appendChild(article);
     
     return li;
+  }
+
+  function onFormSubmitHandler (e) {
+    e.preventDefault();
+    // Получаем значения из input
+    const titleValue = inputTitle.value;
+    const bodyValue = inputBody.value;
+
+    //Проверка - не пустые значения
+    if(!titleValue || !bodyValue) {
+      alert('Пожалуйста введите title и body');
+      return;
+    }
+
+    const task = createNewTask(titleValue, bodyValue);
+    const listItem = listItemTemplate(task);
+    listContainer.insertAdjacentElement('afterbegin', listItem); //добавляем новую задачу в начало списка задач
+    form.reset();   //очистка формы
+  }
+
+  function createNewTask(title, body) {
+    const newTask = {
+      title,
+      body,
+      completed: false,
+      _id: `task-${Math.random()}`,
+    };
+
+    objOfTasks[newTask._id] = newTask; //Присваиваем новую задачу списку задач
+
+    return { ...newTask };
   }
 
 })(tasks);
